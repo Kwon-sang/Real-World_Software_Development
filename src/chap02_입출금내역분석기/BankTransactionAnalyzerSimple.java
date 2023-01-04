@@ -13,64 +13,24 @@ import java.util.List;
 public class BankTransactionAnalyzerSimple {
 
     private static final String RESOURCES = "src/main/resources/";
-//
-    public static void main(String[] args) throws IOException {
-//
-//        //모든 거래내역의 합 계산
-//        final Path path = Paths.get(RESOURCES + args[0]);
-//        final List<String> lines = Files.readAllLines(path);
-//        double total = 0d;
-//        for (final String line : lines) {
-//            final String[] columns = line.split(",");
-//            final double amount = Double.parseDouble(columns[1]);
-//            total += amount;
-//        }
-//
-//        System.out.println("모든 거래내역에 대한 금액 총합은 [" + total + "]원 입니다.");
-//
-//        //1월 입출금 내역 합계 계산
-//        final Path path = Paths.get(RESOURCES + args[0]);
-//        final List<String> lines = Files.readAllLines(path);
-//        double total = 0d;
-//        final DateTimeFormatter DATE_PATTERN = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-//        for (final String line : lines) {
-//            final String[] columns = line.split(",");
-//            final LocalDate date = LocalDate.parse(columns[0], DATE_PATTERN);
-//            if (date.getMonth() == Month.JANUARY) {
-//                final double amount = Double.parseDouble(columns[1]);
-//                total += amount;
-//            }
-//        }
-//
-//        System.out.println("1월 모든 거래내역에 대한 금액 총합은 [" + total + "]원 입니다.");
+    private static final BankStatementCSVParser bankStatementParser = new BankStatementCSVParser();
 
-        final BankStatementCSVParser bankStatementCSVParser = new BankStatementCSVParser();
+    public static void main(String[] args) throws IOException {
 
         final String fileName = args[0];
         final Path path = Paths.get(RESOURCES + fileName);
         final List<String> lines = Files.readAllLines(path);
 
-        final List<BankTransaction> bankTransactions = bankStatementCSVParser.parseLinesFromCSV(lines);
+        final List<BankTransaction> bankTransactions = bankStatementParser.parseLinesFromCSV(lines);
+        final BankStatementProcessor bankStatementProcessor = new BankStatementProcessor(bankTransactions);
 
-        System.out.println("총 입출금 합계는 " + calculateTotalAmount(bankTransactions) + " 입니다.");
-        System.out.println("1월 입출금 합계는 " + selectInMonth(bankTransactions, Month.JANUARY) + " 입니다.");
+        collectSummary(bankStatementProcessor);
     }
 
-    public static double calculateTotalAmount(final List<BankTransaction> bankTransactions) {
-        double total = 0d;
-        for (final BankTransaction bankTransaction : bankTransactions) {
-            total += bankTransaction.getAmount();
-        }
-        return total;
-    }
-
-    public static List<BankTransaction> selectInMonth(final List<BankTransaction> bankTransactions, final Month month) {
-        final List<BankTransaction> bankTransactionsInMonth = new ArrayList<>();
-        for (final BankTransaction bankTransaction : bankTransactions) {
-            if (bankTransaction.getDate().getMonth() == month) {
-                bankTransactionsInMonth.add(bankTransaction);
-            }
-        }
-        return bankTransactionsInMonth;
+    private static void collectSummary(final BankStatementProcessor bankStatementProcessor) {
+        System.out.println("총 거래내역 금액 합계 : " + bankStatementProcessor.calculateTotalAmount());
+        System.out.println("1월 거래내역 금액 합계 : " + bankStatementProcessor.calculateTotalInMonth(Month.JANUARY));
+        System.out.println("2월 거래내역 금액 합계 : " + bankStatementProcessor.calculateTotalInMonth(Month.FEBRUARY));
+        System.out.println("총 급여내역 금액 합계 : " + bankStatementProcessor.calculateTotalForCategory("Salary"));
     }
 }

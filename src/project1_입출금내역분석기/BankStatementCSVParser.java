@@ -1,4 +1,4 @@
-package chap02_입출금내역분석기;
+package project1_입출금내역분석기;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;

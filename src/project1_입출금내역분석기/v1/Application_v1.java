@@ -6,7 +6,7 @@ import java.nio.file.Paths;
 import java.util.List;
 
 // this God-class Anti-pattern
-public class BankApplicationV1 {
+public class Application_v1 {
     private static final String RESOURCE = "src/project1_입출금내역분석기/";
 
     public static void main(String[] args) throws Exception {

@@ -8,7 +8,7 @@ import java.time.Month;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class BankApplicationV2 {
+public class Application_v2 {
 
     private static final String RESOURCE = "src/project1_입출금내역분석기/";
 
